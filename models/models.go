@@ -71,6 +71,20 @@ type Professors struct {
 }
 
 type Groups struct {
-	GroupId   int    `json:"group_id"`
-	GroupName string `json:"group_name"`
+	GroupId     int    `json:"group_id"`
+	ProfessorId int    `json:"professor_id"`
+	GroupName   string `json:"group_name"`
+}
+
+type Students struct {
+	StudentId               int       `json:"student_id"`
+	StudentGroupMonitor     int       `json:"student_group_monitor"`
+	Surname                 string    `json:"surname"`
+	Name                    string    `json:"name"`
+	Patronymic              string    `json:"patronymic"`
+	BachelorsEnrollmentDate time.Time `json:"bachelors_enrollment_date"`
+	Gender                  string    `json:"gender"`
+	GroupId                 int       `json:"group_id"`
+	//GroupId                 Groups    `json:"groups"`
+
 }

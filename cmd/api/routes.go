@@ -17,7 +17,11 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/department/:id", app.getOneDepartment)
 	router.HandlerFunc(http.MethodGet, "/v1/departments", app.getAllDepartments)
 
-	//router.HandlerFunc(http.MethodGet, "/v1/professor/:id", app.getOneProfessor)
+	router.HandlerFunc(http.MethodGet, "/v1/professor/:id", app.getOneProfessor)
 	router.HandlerFunc(http.MethodGet, "/v1/professors", app.getAllProfessors)
+
+	router.HandlerFunc(http.MethodGet, "/v1/student/:id", app.getOneStudent)
+	router.HandlerFunc(http.MethodGet, "/v1/students", app.getAllStudents)
+
 	return app.enableCORS(router)
 }
