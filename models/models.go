@@ -85,6 +85,11 @@ type Students struct {
 	BachelorsEnrollmentDate time.Time `json:"bachelors_enrollment_date"`
 	Gender                  string    `json:"gender"`
 	GroupId                 int       `json:"group_id"`
+	Tuition                 string    `json:"tuition"`
+	IdCode                  string    `json:"id_code"`
+	PhoneNumber             string    `json:"phone_number"`
+	Email                   string    `json:"email"`
+
 	//GroupId                 Groups    `json:"groups"`
 
 }
