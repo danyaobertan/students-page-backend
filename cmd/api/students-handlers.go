@@ -47,12 +47,27 @@ func (app *application) deleteStudent(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *application) insertStudent(w http.ResponseWriter, r *http.Request) {
+//insert and update are combined in edit
+//func (app *application) insertStudent(w http.ResponseWriter, r *http.Request) {
+//
+//}
+//
+//func (app *application) updateStudent(w http.ResponseWriter, r *http.Request) {
+//
+//}
 
-}
+func (app *application) editStudent(w http.ResponseWriter, r *http.Request) {
+	type jsonResp struct {
+		OK bool `json:"ok"`
+	}
 
-func (app *application) updateStudent(w http.ResponseWriter, r *http.Request) {
+	ok := jsonResp{OK: true}
 
+	err := app.writeJSON(w, http.StatusOK, ok, "response")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 }
 
 func (app *application) searchStudent(w http.ResponseWriter, r *http.Request) {
