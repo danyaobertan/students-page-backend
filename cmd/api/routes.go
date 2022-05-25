@@ -23,6 +23,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/student/:id", app.getOneStudent)
 	router.HandlerFunc(http.MethodGet, "/v1/students", app.getAllStudents)
 	router.HandlerFunc(http.MethodPost, "/v1/admin/editstudent", app.editStudent)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/deletestudent/:id", app.deleteStudent)
 
 	return app.enableCORS(router)
 }

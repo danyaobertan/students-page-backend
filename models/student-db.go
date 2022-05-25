@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -119,4 +120,72 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 		students = append(students, &student)
 	}
 	return students, err
+}
+
+func (m *DBModel) InsertStudent(student Students) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `insert into students (name, surname, patronymic, bachelors_enrollment_date, gender,group_id, tuition, phone_number, email) 
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+
+	_, err := m.DB.ExecContext(ctx, stmt,
+		student.Name,
+		student.Surname,
+		student.Patronymic,
+		student.BachelorsEnrollmentDate,
+		student.Gender,
+		student.GroupId,
+		student.Tuition,
+		student.PhoneNumber,
+		student.Email,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *DBModel) UpdateStudent(student Students) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `update students set name = $1, surname=$2, patronymic=$3, bachelors_enrollment_date=$4, gender=$5,
+                    group_id=$6, tuition=$7, phone_number=$8, email=$9 where student_id = $10`
+	fmt.Println(student)
+	fmt.Println(`/n`)
+	fmt.Println("/n")
+	fmt.Println(stmt)
+	_, err := m.DB.ExecContext(ctx, stmt,
+		student.Name,
+		student.Surname,
+		student.Patronymic,
+		student.BachelorsEnrollmentDate,
+		student.Gender,
+		student.GroupId,
+		student.Tuition,
+		student.PhoneNumber,
+		student.Email,
+		student.StudentId,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *DBModel) DeleteStudent(id int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := "delete from students where student_id = $1"
+
+	_, err := m.DB.ExecContext(ctx, stmt, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
