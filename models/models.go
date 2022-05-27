@@ -91,5 +91,10 @@ type Students struct {
 	Email                   string    `json:"email"`
 
 	//GroupId                 Groups    `json:"groups"`
+}
 
+type User struct {
+	ID       int
+	Email    string
+	Password string
 }
