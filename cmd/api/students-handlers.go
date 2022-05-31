@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
@@ -37,17 +38,35 @@ func (app *application) getOneStudent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getAllStudents(w http.ResponseWriter, r *http.Request) {
-	students, err := app.models.DB.AllStudents()
-	if err != nil {
-		app.errorJSON(w, err)
-		return
+	query := r.URL.Query()
+	fmt.Println(query)
+	fmt.Printf("%T\n", query)
+	if len(query) == 0 {
+		students, err := app.models.DB.AllStudents()
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+
+		err = app.writeJSON(w, http.StatusOK, students, "students")
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+	} else {
+		students, err, total, page, lastPage := app.models.DB.SearchStudents(query)
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
+		fmt.Println(total, page, lastPage)
+		err = app.writeJSON(w, http.StatusOK, students, "students")
+		if err != nil {
+			app.errorJSON(w, err)
+			return
+		}
 	}
 
-	err = app.writeJSON(w, http.StatusOK, students, "students")
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
 }
 
 func (app *application) deleteStudent(w http.ResponseWriter, r *http.Request) {
