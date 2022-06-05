@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"net/url"
 	"strconv"
@@ -10,10 +11,10 @@ import (
 
 // GetProfessor returns one professor and error, if any
 func (m *DBModel) GetStudent(id int) (*Students, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	query := `select student_id,student_group_monitor, name, patronymic, surname,bachelors_enrollment_date, gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
+	query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 
@@ -67,7 +68,7 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `select student_id,student_group_monitor, name, patronymic, surname,bachelors_enrollment_date, gender,group_id,tuition,id_code,phone_number,email from students order by student_id`
+	query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students order by student_id`
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -128,7 +129,7 @@ func (m *DBModel) InsertStudent(student Students) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	stmt := `insert into students (name, surname, patronymic, bachelors_enrollment_date, gender,group_id, tuition, phone_number, email) 
+	stmt := `insert into students (name, surname, patronymic, COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id, tuition, phone_number, email) 
 				values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
@@ -194,7 +195,7 @@ func (m *DBModel) DeleteStudent(id int) error {
 
 // All returns all students and error, if any
 func (m *DBModel) SearchStudents(f url.Values) ([]*Students, error, int, int, float64) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 	whereClause := ``
 	orderClause := ``
@@ -221,7 +222,7 @@ func (m *DBModel) SearchStudents(f url.Values) ([]*Students, error, int, int, fl
 		}
 		if key == "patronymic" {
 			if len(value) == 1 && len(whereClause) == 0 {
-				whereClause += ` where patronymic like '%` + value[0] + `%'`
+				whereClause += ` where patronymic like '(%` + value[0] + `%'`
 				//moreThanOneWhereCase = true
 			} else {
 				whereClause += ` and patronymic like '%` + value[0] + `%'`
@@ -246,10 +247,38 @@ func (m *DBModel) SearchStudents(f url.Values) ([]*Students, error, int, int, fl
 			page, _ = strconv.Atoi(value[0])
 		}
 	}
-	query := `select student_id,student_group_monitor, name, patronymic, surname,bachelors_enrollment_date, gender,group_id,tuition,id_code,phone_number,email from students` + whereClause + orderClause
-
-	var total int
-	err := m.DB.QueryRow(`select count(*) from students` + whereClause).Scan(&total)
+	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01') as bachelors_enrollment_date ,COALESCE(masters_enrollment_date,'0001-01-01')as masters_enrollment_date, gender,group_id,tuition,id_code,phone_number,email from students` + whereClause + orderClause
+	query := `select  student_id,student_group_monitor,   
+      COALESCE(group_id,0) as group_id,
+	  COALESCE(name,'') as name,
+      COALESCE(surname,'') as surname,
+      COALESCE(patronymic,'') as patronymic,
+      COALESCE(bachelors_enrollment_document_id,'') as bachelors_enrollment_document_id,
+      COALESCE(bachelors_enrollment_date,'0001-01-01') as bachelors_enrollment_date,
+      COALESCE(masters_enrollment_document_id,'') as masters_enrollment_document_id,
+      COALESCE(masters_enrollment_date,'0001-01-01') as masters_enrollment_date,
+      COALESCE(bachelors_expulsion_document_id,'') as bachelors_expulsion_document_id,
+      COALESCE(bachelors_expulsion_date,'0001-01-01') as bachelors_expulsion_date,
+      COALESCE(masters_expulsion_document_id,'') as masters_expulsion_document_id,
+      COALESCE(masters_expulsion_date,'0001-01-01') as masters_expulsion_date,
+      COALESCE(id_code,'') as id_code,
+      COALESCE(tuition,'') as tuition,
+      COALESCE(birth_date,'0001-01-01') as birth_date,
+      COALESCE(gender,'') as gender,
+      COALESCE(residence_address,'') as residence_address,
+      COALESCE(residence_postal_code,'') as residence_postal_code,
+      COALESCE(campus_address,'') as campus_address,
+      COALESCE(campus_postal_code,'') as campus_postal_code,
+      COALESCE(phone_number,'') as phone_number,
+      COALESCE(email,'') as email
+      from students` + whereClause + orderClause
+	shitRow := `select count(*) from (` + query + `)src`
+	fmt.Println(shitRow)
+	strTotal := ``
+	total := 0
+	//var total int
+	err := m.DB.QueryRow(`select count(*) from (` + query + `)src`).Scan(&strTotal)
+	total, err = strconv.Atoi(strTotal)
 	if err != nil {
 		return nil, err, 0, 0, 0
 	}
@@ -269,17 +298,30 @@ func (m *DBModel) SearchStudents(f url.Values) ([]*Students, error, int, int, fl
 		err := rows.Scan(
 			&student.StudentId,
 			&student.StudentGroupMonitor,
-			&student.Name,
-			&student.Patronymic,
-			&student.Surname,
-			&student.BachelorsEnrollmentDate,
-			&student.Gender,
 			&student.GroupId,
-			&student.Tuition,
+			&student.Name,
+			&student.Surname,
+			&student.Patronymic,
+			&student.BachelorsEnrollmentDocumentId,
+			&student.BachelorsEnrollmentDate,
+			&student.MastersEnrollmentDocumentId,
+			&student.MastersEnrollmentDate,
+			&student.BachelorsExpulsionDocumentId,
+			&student.BachelorsExpulsionDate,
+			&student.MastersExpulsionDocumentId,
+			&student.MastersExpulsionDate,
 			&student.IdCode,
+			&student.Tuition,
+			&student.BirthDate,
+			&student.Gender,
+			&student.ResidenceAddress,
+			&student.ResidencePostalCode,
+			&student.CampusAddress,
+			&student.CampusPostalCode,
 			&student.PhoneNumber,
 			&student.Email,
 		)
+
 		if err != nil {
 			return nil, err, 0, 0, 0
 		}

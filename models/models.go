@@ -17,36 +17,6 @@ func NewModels(db *sql.DB) Models {
 	}
 }
 
-type Movie struct {
-	ID          int          `json:"id"`
-	Title       string       `json:"title"`
-	Description string       `json:"description"`
-	Year        int          `json:"year"`
-	ReleaseDate time.Time    `json:"release_date"`
-	Runtime     int          `json:"runtime"`
-	Rating      int          `json:"rating"`
-	MPAARating  string       `json:"mpaa_rating"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
-	MovieGenre  []MovieGenre `json:"-"`
-}
-
-type Genre struct {
-	ID        int       `json:"id"`
-	GenreName string    `json:"genre_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
-type MovieGenre struct {
-	ID        int       `json:"id"`
-	MovieID   int       `json:"movie_id"`
-	GenreID   int       `json:"genre_id"`
-	Genre     Genre     `json:"genre"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 type Departments struct {
 	DepartmentId   int            `json:"department_id"`
 	DepartmentName string         `json:"department_name"`
@@ -54,20 +24,20 @@ type Departments struct {
 }
 
 type Professors struct {
-	ProfessorId         int            `json:"professor_id"`
-	DepartmentId        int            `json:"department_id"`
-	Name                string         `json:"name"`
-	Surname             string         `json:"surname"`
-	Patronymic          string         `json:"patronymic"`
-	Degree              string         `json:"degree"`
-	IdCode              string         `json:"id_code"`
-	BirthDate           time.Time      `json:"birth_date"`
-	Gender              string         `json:"gender"`
-	PhoneNumber         string         `json:"phone_number"`
-	Email               string         `json:"email"`
-	ResidencePostalCode string         `json:"residence_postal_code"`
-	ResidenceAddress    string         `json:"residence_address"`
-	Groups              map[int]string `json:"groups"`
+	ProfessorId         int       `json:"professor_id"`
+	DepartmentId        int       `json:"department_id"`
+	Name                string    `json:"name"`
+	Surname             string    `json:"surname"`
+	Patronymic          string    `json:"patronymic"`
+	Degree              string    `json:"degree"`
+	IdCode              string    `json:"id_code"`
+	BirthDate           time.Time `json:"birth_date"`
+	Gender              string    `json:"gender"`
+	PhoneNumber         string    `json:"phone_number"`
+	Email               string    `json:"email"`
+	ResidencePostalCode string    `json:"residence_postal_code"`
+	ResidenceAddress    string    `json:"residence_address"`
+	Groups              []*Groups `json:"groups"`
 }
 
 type Groups struct {
@@ -77,21 +47,67 @@ type Groups struct {
 }
 
 type Students struct {
-	StudentId               int       `json:"student_id"`
-	StudentGroupMonitor     int       `json:"student_group_monitor"`
-	Surname                 string    `json:"surname"`
-	Name                    string    `json:"name"`
-	Patronymic              string    `json:"patronymic"`
-	BachelorsEnrollmentDate time.Time `json:"bachelors_enrollment_date"`
-	Gender                  string    `json:"gender"`
-	GroupId                 int       `json:"group_id"`
-	Tuition                 string    `json:"tuition"`
-	IdCode                  string    `json:"id_code"`
-	PhoneNumber             string    `json:"phone_number"`
-	Email                   string    `json:"email"`
-
-	//GroupId                 Groups    `json:"groups"`
+	StudentId                     int       `json:"student_id"`
+	StudentGroupMonitor           int       `json:"student_group_monitor"`
+	GroupId                       int       `json:"group_id"`
+	Surname                       string    `json:"surname"`
+	Name                          string    `json:"name"`
+	Patronymic                    string    `json:"patronymic"`
+	BachelorsEnrollmentDocumentId string    `json:"bachelors_enrollment_document_id"`
+	BachelorsEnrollmentDate       time.Time `json:"bachelors_enrollment_date"`
+	MastersEnrollmentDocumentId   string    `json:"masters_enrollment_document_id"`
+	MastersEnrollmentDate         time.Time `json:"masters_enrollment_date"`
+	BachelorsExpulsionDocumentId  string    `json:"bachelors_expulsion_document_id"`
+	BachelorsExpulsionDate        time.Time `json:"bachelors_expulsion_date"`
+	MastersExpulsionDocumentId    string    `json:"masters_expulsion_document_id"`
+	MastersExpulsionDate          time.Time `json:"masters_expulsion_date"`
+	Tuition                       string    `json:"tuition"`
+	IdCode                        string    `json:"id_code"`
+	BirthDate                     time.Time `json:"birth_date"`
+	Gender                        string    `json:"gender,omitempty"`
+	ResidencePostalCode           string    `json:"residence_postal_code"`
+	ResidenceAddress              string    `json:"residence_address"`
+	CampusPostalCode              string    `json:"campus_postal_code"`
+	CampusAddress                 string    `json:"campus_address"`
+	PhoneNumber                   string    `json:"phone_number"`
+	Email                         string    `json:"email"`
 }
+
+type StudentsRelatives struct {
+	RelativeId        int       `json:"relative_id_id"`
+	StudentId         int       `json:"student_id"`
+	Surname           string    `json:"surname"`
+	Name              string    `json:"name"`
+	Patronymic        string    `json:"patronymic"`
+	RelationToStudent string    `json:"relation_to_student"`
+	BirthDate         time.Time `json:"birth_date"`
+	PhoneNumber       string    `json:"phone_number"`
+	Email             string    `json:"email"`
+}
+
+type Subjects struct {
+	SubjectId      int       `json:"subject_id"`
+	ProfessorId    int       `json:"professor_id"`
+	SubjectName    string    `json:"subject_name"`
+	SubjectCredits int       `json:"subject_credits"`
+	ExamType       string    `json:"exam_type"`
+	ExamDate       time.Time `json:"exam_date"`
+}
+
+type StudentsSubjects struct {
+	StudentsSubjectsId int    `json:"students_subjects_id"`
+	StudentId          int    `json:"student_id"`
+	SubjectId          string `json:"subject_id"`
+	ExamScore          int    `json:"exam_score"`
+	TotalScore         string `json:"total_score"`
+}
+
+//type StudentsPoints struct {
+//	StudentId Students.StudentId
+//	SubjectName
+//	ExamScore
+//	TotalScore, .
+//}
 
 type User struct {
 	ID       int

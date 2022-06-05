@@ -69,8 +69,8 @@ func main() {
 		Addr:         fmt.Sprintf(":%d", cfg.port),
 		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  100 * time.Second,
+		WriteTimeout: 300 * time.Second,
 	}
 
 	logger.Println("Starting server on port", cfg.port)
