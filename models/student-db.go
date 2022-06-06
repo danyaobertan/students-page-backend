@@ -14,8 +14,31 @@ func (m *DBModel) GetStudent(id int) (*Students, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
-
+	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
+	query := `select  student_id,student_group_monitor,   
+      COALESCE(group_id,0) as group_id,
+	  COALESCE(name,'') as name,
+      COALESCE(surname,'') as surname,
+      COALESCE(patronymic,'') as patronymic,
+      COALESCE(bachelors_enrollment_document_id,'') as bachelors_enrollment_document_id,
+      COALESCE(bachelors_enrollment_date,'0001-01-01') as bachelors_enrollment_date,
+      COALESCE(masters_enrollment_document_id,'') as masters_enrollment_document_id,
+      COALESCE(masters_enrollment_date,'0001-01-01') as masters_enrollment_date,
+      COALESCE(bachelors_expulsion_document_id,'') as bachelors_expulsion_document_id,
+      COALESCE(bachelors_expulsion_date,'0001-01-01') as bachelors_expulsion_date,
+      COALESCE(masters_expulsion_document_id,'') as masters_expulsion_document_id,
+      COALESCE(masters_expulsion_date,'0001-01-01') as masters_expulsion_date,
+      COALESCE(id_code,'') as id_code,
+      COALESCE(tuition,'') as tuition,
+      COALESCE(birth_date,'0001-01-01') as birth_date,
+      COALESCE(gender,'') as gender,
+      COALESCE(residence_address,'') as residence_address,
+      COALESCE(residence_postal_code,'') as residence_postal_code,
+      COALESCE(campus_address,'') as campus_address,
+      COALESCE(campus_postal_code,'') as campus_postal_code,
+      COALESCE(phone_number,'') as phone_number,
+      COALESCE(email,'') as email
+      from students  where student_id = $1`
 	row := m.DB.QueryRowContext(ctx, query, id)
 
 	var student Students
@@ -23,14 +46,26 @@ func (m *DBModel) GetStudent(id int) (*Students, error) {
 	err := row.Scan(
 		&student.StudentId,
 		&student.StudentGroupMonitor,
-		&student.Name,
-		&student.Patronymic,
-		&student.Surname,
-		&student.BachelorsEnrollmentDate,
-		&student.Gender,
 		&student.GroupId,
-		&student.Tuition,
+		&student.Name,
+		&student.Surname,
+		&student.Patronymic,
+		&student.BachelorsEnrollmentDocumentId,
+		&student.BachelorsEnrollmentDate,
+		&student.MastersEnrollmentDocumentId,
+		&student.MastersEnrollmentDate,
+		&student.BachelorsExpulsionDocumentId,
+		&student.BachelorsExpulsionDate,
+		&student.MastersExpulsionDocumentId,
+		&student.MastersExpulsionDate,
 		&student.IdCode,
+		&student.Tuition,
+		&student.BirthDate,
+		&student.Gender,
+		&student.ResidenceAddress,
+		&student.ResidencePostalCode,
+		&student.CampusAddress,
+		&student.CampusPostalCode,
 		&student.PhoneNumber,
 		&student.Email,
 	)
@@ -57,7 +92,6 @@ func (m *DBModel) GetStudent(id int) (*Students, error) {
 	//	groups[g.GroupId] = g.GroupName + " " + string(g.GroupId)
 	//}
 	//professor.Groups = groups
-
 	return &student, nil
 	//return nil, nil
 
@@ -68,7 +102,31 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students order by student_id`
+	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students order by student_id`
+	query := `select  student_id,student_group_monitor,   
+      COALESCE(group_id,0) as group_id,
+	  COALESCE(name,'') as name,
+      COALESCE(surname,'') as surname,
+      COALESCE(patronymic,'') as patronymic,
+      COALESCE(bachelors_enrollment_document_id,'') as bachelors_enrollment_document_id,
+      COALESCE(bachelors_enrollment_date,'0001-01-01') as bachelors_enrollment_date,
+      COALESCE(masters_enrollment_document_id,'') as masters_enrollment_document_id,
+      COALESCE(masters_enrollment_date,'0001-01-01') as masters_enrollment_date,
+      COALESCE(bachelors_expulsion_document_id,'') as bachelors_expulsion_document_id,
+      COALESCE(bachelors_expulsion_date,'0001-01-01') as bachelors_expulsion_date,
+      COALESCE(masters_expulsion_document_id,'') as masters_expulsion_document_id,
+      COALESCE(masters_expulsion_date,'0001-01-01') as masters_expulsion_date,
+      COALESCE(id_code,'') as id_code,
+      COALESCE(tuition,'') as tuition,
+      COALESCE(birth_date,'0001-01-01') as birth_date,
+      COALESCE(gender,'') as gender,
+      COALESCE(residence_address,'') as residence_address,
+      COALESCE(residence_postal_code,'') as residence_postal_code,
+      COALESCE(campus_address,'') as campus_address,
+      COALESCE(campus_postal_code,'') as campus_postal_code,
+      COALESCE(phone_number,'') as phone_number,
+      COALESCE(email,'') as email
+      from students order by student_id`
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -83,14 +141,26 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 		err := rows.Scan(
 			&student.StudentId,
 			&student.StudentGroupMonitor,
-			&student.Name,
-			&student.Patronymic,
-			&student.Surname,
-			&student.BachelorsEnrollmentDate,
-			&student.Gender,
 			&student.GroupId,
-			&student.Tuition,
+			&student.Name,
+			&student.Surname,
+			&student.Patronymic,
+			&student.BachelorsEnrollmentDocumentId,
+			&student.BachelorsEnrollmentDate,
+			&student.MastersEnrollmentDocumentId,
+			&student.MastersEnrollmentDate,
+			&student.BachelorsExpulsionDocumentId,
+			&student.BachelorsExpulsionDate,
+			&student.MastersExpulsionDocumentId,
+			&student.MastersExpulsionDate,
 			&student.IdCode,
+			&student.Tuition,
+			&student.BirthDate,
+			&student.Gender,
+			&student.ResidenceAddress,
+			&student.ResidencePostalCode,
+			&student.CampusAddress,
+			&student.CampusPostalCode,
 			&student.PhoneNumber,
 			&student.Email,
 		)
