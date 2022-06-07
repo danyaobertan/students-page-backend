@@ -9,39 +9,87 @@ import (
 	"time"
 )
 
+type StudentProfessorGroup struct {
+	StudentId                     int       `json:"student_id"`
+	StudentGroupMonitor           int       `json:"student_group_monitor"`
+	GroupId                       int       `json:"group_id"`
+	Surname                       string    `json:"surname"`
+	Name                          string    `json:"name"`
+	Patronymic                    string    `json:"patronymic"`
+	BachelorsEnrollmentDocumentId string    `json:"bachelors_enrollment_document_id"`
+	BachelorsEnrollmentDate       time.Time `json:"bachelors_enrollment_date"`
+	MastersEnrollmentDocumentId   string    `json:"masters_enrollment_document_id"`
+	MastersEnrollmentDate         time.Time `json:"masters_enrollment_date"`
+	BachelorsExpulsionDocumentId  string    `json:"bachelors_expulsion_document_id"`
+	BachelorsExpulsionDate        time.Time `json:"bachelors_expulsion_date"`
+	MastersExpulsionDocumentId    string    `json:"masters_expulsion_document_id"`
+	MastersExpulsionDate          time.Time `json:"masters_expulsion_date"`
+	Tuition                       string    `json:"tuition"`
+	IdCode                        string    `json:"id_code"`
+	BirthDate                     time.Time `json:"birth_date"`
+	Gender                        string    `json:"gender,omitempty"`
+	ResidencePostalCode           string    `json:"residence_postal_code"`
+	ResidenceAddress              string    `json:"residence_address"`
+	CampusPostalCode              string    `json:"campus_postal_code"`
+	CampusAddress                 string    `json:"campus_address"`
+	PhoneNumber                   string    `json:"phone_number"`
+	Email                         string    `json:"email"`
+	GroupName                     string    `json:"group_name"`
+	ProfessorID                   string    `json:"professor_id"`
+	ProfessorName                 string    `json:"professor_name"`
+	ProfessorSurname              string    `json:"professor_surname"`
+	ProfessorPatronymic           string    `json:"professor_patronymic"`
+	StudentGroupMonitorName       string    `json:"student_group_monitor_name"`
+	StudentGroupMonitorSurname    string    `json:"student_group_monitor_surname"`
+	StudentGroupMonitorPatronymic string    `json:"student_group_monitor_patronymic"`
+}
+
 // GetProfessor returns one professor and error, if any
-func (m *DBModel) GetStudent(id int) (*Students, error) {
+func (m *DBModel) GetStudent(id int) (*StudentProfessorGroup, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
 	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
-	query := `select  student_id,student_group_monitor,   
-      COALESCE(group_id,0) as group_id,
-	  COALESCE(name,'') as name,
-      COALESCE(surname,'') as surname,
-      COALESCE(patronymic,'') as patronymic,
-      COALESCE(bachelors_enrollment_document_id,'') as bachelors_enrollment_document_id,
-      COALESCE(bachelors_enrollment_date,'0001-01-01') as bachelors_enrollment_date,
-      COALESCE(masters_enrollment_document_id,'') as masters_enrollment_document_id,
-      COALESCE(masters_enrollment_date,'0001-01-01') as masters_enrollment_date,
-      COALESCE(bachelors_expulsion_document_id,'') as bachelors_expulsion_document_id,
-      COALESCE(bachelors_expulsion_date,'0001-01-01') as bachelors_expulsion_date,
-      COALESCE(masters_expulsion_document_id,'') as masters_expulsion_document_id,
-      COALESCE(masters_expulsion_date,'0001-01-01') as masters_expulsion_date,
-      COALESCE(id_code,'') as id_code,
-      COALESCE(tuition,'') as tuition,
-      COALESCE(birth_date,'0001-01-01') as birth_date,
-      COALESCE(gender,'') as gender,
-      COALESCE(residence_address,'') as residence_address,
-      COALESCE(residence_postal_code,'') as residence_postal_code,
-      COALESCE(campus_address,'') as campus_address,
-      COALESCE(campus_postal_code,'') as campus_postal_code,
-      COALESCE(phone_number,'') as phone_number,
-      COALESCE(email,'') as email
-      from students  where student_id = $1`
+	query := `select s.student_id,
+       s.student_group_monitor,
+       COALESCE(s.group_id, 0)                             as group_id,
+       COALESCE(s.name, '')                                as name,
+       COALESCE(s.surname, '')                             as surname,
+       COALESCE(s.patronymic, '')                          as patronymic,
+       COALESCE(s.bachelors_enrollment_document_id, '')    as bachelors_enrollment_document_id,
+       COALESCE(s.bachelors_enrollment_date, '0001-01-01') as bachelors_enrollment_date,
+       COALESCE(s.masters_enrollment_document_id, '')      as masters_enrollment_document_id,
+       COALESCE(s.masters_enrollment_date, '0001-01-01')   as masters_enrollment_date,
+       COALESCE(s.bachelors_expulsion_document_id, '')     as bachelors_expulsion_document_id,
+       COALESCE(s.bachelors_expulsion_date, '0001-01-01')  as bachelors_expulsion_date,
+       COALESCE(s.masters_expulsion_document_id, '')       as masters_expulsion_document_id,
+       COALESCE(s.masters_expulsion_date, '0001-01-01')    as masters_expulsion_date,
+       COALESCE(s.id_code, '')                             as id_code,
+       COALESCE(s.tuition, '')                             as tuition,
+       COALESCE(s.birth_date, '0001-01-01')                as birth_date,
+       COALESCE(s.gender, '')                              as gender,
+       COALESCE(s.residence_address, '')                   as residence_address,
+       COALESCE(s.residence_postal_code, '')               as residence_postal_code,
+       COALESCE(s.campus_address, '')                      as campus_address,
+       COALESCE(s.campus_postal_code, '')                  as campus_postal_code,
+       COALESCE(s.phone_number, '')                        as phone_number,
+       COALESCE(s.email, '')                               as email,
+       COALESCE(g.group_name, '')                          as group_name,
+       p.professor_id,
+       COALESCE(p.name, '')                                as professor_name,
+       COALESCE(p.surname, '')                             as professor_surname,
+       COALESCE(p.patronymic, '')                          as professor_patronymic,
+       COALESCE(ss.name, '')                 as student_group_monitor_name,
+       COALESCE(ss.surname, '')              as student_group_monitor_surname,
+       COALESCE(ss.patronymic, '')           as student_group_monitor_patronymic
+		from students s
+         join groups g on g.group_id = s.group_id
+         join professors p on g.professor_id = p.professor_id 
+         join students ss on s.student_group_monitor = ss.student_id
+		where s.student_id = $1`
 	row := m.DB.QueryRowContext(ctx, query, id)
 
-	var student Students
+	var student StudentProfessorGroup
 
 	err := row.Scan(
 		&student.StudentId,
@@ -68,6 +116,14 @@ func (m *DBModel) GetStudent(id int) (*Students, error) {
 		&student.CampusPostalCode,
 		&student.PhoneNumber,
 		&student.Email,
+		&student.GroupName,
+		&student.ProfessorID,
+		&student.ProfessorName,
+		&student.ProfessorSurname,
+		&student.ProfessorPatronymic,
+		&student.StudentGroupMonitorName,
+		&student.StudentGroupMonitorSurname,
+		&student.StudentGroupMonitorPatronymic,
 	)
 	if err != nil {
 		return nil, err

@@ -13,13 +13,13 @@ import (
 //}
 
 type StudentPoint struct {
-	StudentId    int       `json:"student_id"`
-	SubjectName  string    `json:"subject_name"`
-	ExamScore    string    `json:"exam_score"`
-	TotalScore   string    `json:"total_score"`
-	StudentPoint float32   `json:"student_point"`
-	ExamType     string    `json:"exam_type"`
-	ExamDate     time.Time `json:"exam_date"`
+	StudentId      int       `json:"student_id"`
+	SubjectName    string    `json:"subject_name"`
+	ExamScore      string    `json:"exam_score"`
+	TotalScore     string    `json:"total_score"`
+	SubjectCredits float32   `json:"subject_credits"`
+	ExamType       string    `json:"exam_type"`
+	ExamDate       time.Time `json:"exam_date"`
 }
 
 //type StudentsPoint struct {
@@ -35,7 +35,7 @@ func (m *DBModel) GetStudentPoints(id int) ([]*StudentPoint, error) {
 			subjects.subject_credits, subjects.exam_type, subjects.exam_date From students
 			join studentssubjects on studentssubjects.student_id = students.student_id
 			join subjects on subjects.subject_id = studentssubjects.subject_id
-			where students.student_id = $1`
+			where students.student_id = $1 order by subjects.subject_id`
 
 	rows, err := m.DB.QueryContext(ctx, query, id)
 
@@ -53,7 +53,7 @@ func (m *DBModel) GetStudentPoints(id int) ([]*StudentPoint, error) {
 			&student_point.SubjectName,
 			&student_point.ExamScore,
 			&student_point.TotalScore,
-			&student_point.StudentPoint,
+			&student_point.SubjectCredits,
 			&student_point.ExamType,
 			&student_point.ExamDate,
 		)
@@ -93,7 +93,7 @@ func (m *DBModel) AllStudentsPoints() ([]*StudentPoint, error) {
 			&student_point.SubjectName,
 			&student_point.ExamScore,
 			&student_point.TotalScore,
-			&student_point.StudentPoint,
+			&student_point.SubjectCredits,
 			&student_point.ExamType,
 			&student_point.ExamDate,
 		)

@@ -74,7 +74,7 @@ type Students struct {
 }
 
 type StudentsRelatives struct {
-	RelativeId        int       `json:"relative_id_id"`
+	RelativeId        int       `json:"relative_id"`
 	StudentId         int       `json:"student_id"`
 	Surname           string    `json:"surname"`
 	Name              string    `json:"name"`
@@ -101,13 +101,6 @@ type StudentsSubjects struct {
 	ExamScore          int    `json:"exam_score"`
 	TotalScore         string `json:"total_score"`
 }
-
-//type StudentsPoints struct {
-//	StudentId Students.StudentId
-//	SubjectName
-//	ExamScore
-//	TotalScore, .
-//}
 
 type User struct {
 	ID       int

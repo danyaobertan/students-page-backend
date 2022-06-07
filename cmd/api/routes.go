@@ -34,10 +34,13 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/students-points", app.getAllStudentsPoints)
 	router.HandlerFunc(http.MethodGet, "/v1/student-points/:id", app.getOneStudentPoints)
 
+	router.HandlerFunc(http.MethodGet, "/v1/student-relatives/:id", app.getOneStudentRelative)
+	//router.HandlerFunc(http.MethodGet, "/v1/student-relatives/:id", app.getAllStudentsRelatives)
+
 	router.HandlerFunc(http.MethodGet, "/v1/student/:id", app.getOneStudent)
 	router.HandlerFunc(http.MethodGet, "/v1/students", app.getAllStudents)
 
-	router.POST("/v1/admin/editstudent", app.wrap(secure.ThenFunc(app.editStudent)))
+	//router.POST("/v1/admin/editstudent", app.wrap(secure.ThenFunc(app.editStudent)))
 	router.POST("/v1/admin/deletestudent/:id", app.wrap(secure.ThenFunc(app.deleteStudent)))
 
 	return app.enableCORS(router)

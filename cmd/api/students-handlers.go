@@ -1,14 +1,11 @@
 package main
 
 import (
-	"backend/models"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type jsonResp struct {
@@ -108,57 +105,58 @@ type StudentPayload struct {
 	Email                   string `json:"email"`
 }
 
-func (app *application) editStudent(w http.ResponseWriter, r *http.Request) {
-
-	var payload StudentPayload
-
-	err := json.NewDecoder(r.Body).Decode(&payload)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	var student models.Students
-
-	if payload.StudentId != "0" {
-		id, _ := strconv.Atoi(payload.StudentId)
-		s, _ := app.models.DB.GetStudent(id)
-		student = *s
-	}
-
-	student.StudentId, _ = strconv.Atoi(payload.StudentId)
-	student.Surname = payload.Surname
-	student.Name = payload.Name
-	student.Patronymic = payload.Patronymic
-	student.BachelorsEnrollmentDate, _ = time.Parse("2006-01-02", payload.BachelorsEnrollmentDate)
-	student.Gender = payload.Gender
-	student.GroupId, _ = strconv.Atoi(payload.GroupId)
-	student.Tuition = payload.Tuition
-	student.PhoneNumber = payload.PhoneNumber
-	student.Email = payload.Email
-
-	if student.StudentId == 0 {
-		err = app.models.DB.InsertStudent(student)
-		if err != nil {
-			app.errorJSON(w, err)
-			return
-		}
-	} else {
-		err = app.models.DB.UpdateStudent(student)
-		if err != nil {
-			app.errorJSON(w, err)
-			return
-		}
-	}
-
-	ok := jsonResp{OK: true}
-
-	err = app.writeJSON(w, http.StatusOK, ok, "response")
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-}
+//func (app *application) editStudent(w http.ResponseWriter, r *http.Request) {
+//
+//	//var payload StudentPayload
+//	var payload StudentPayload
+//
+//	err := json.NewDecoder(r.Body).Decode(&payload)
+//	if err != nil {
+//		app.errorJSON(w, err)
+//		return
+//	}
+//
+//	var student models.Students
+//
+//	if payload.StudentId != "0" {
+//		id, _ := strconv.Atoi(payload.StudentId)
+//		s, _ := app.models.DB.GetStudent(id)
+//		student = *s
+//	}
+//
+//	student.StudentId, _ = strconv.Atoi(payload.StudentId)
+//	student.Surname = payload.Surname
+//	student.Name = payload.Name
+//	student.Patronymic = payload.Patronymic
+//	student.BachelorsEnrollmentDate, _ = time.Parse("2006-01-02", payload.BachelorsEnrollmentDate)
+//	student.Gender = payload.Gender
+//	student.GroupId, _ = strconv.Atoi(payload.GroupId)
+//	student.Tuition = payload.Tuition
+//	student.PhoneNumber = payload.PhoneNumber
+//	student.Email = payload.Email
+//
+//	if student.StudentId == 0 {
+//		err = app.models.DB.InsertStudent(student)
+//		if err != nil {
+//			app.errorJSON(w, err)
+//			return
+//		}
+//	} else {
+//		err = app.models.DB.UpdateStudent(student)
+//		if err != nil {
+//			app.errorJSON(w, err)
+//			return
+//		}
+//	}
+//
+//	ok := jsonResp{OK: true}
+//
+//	err = app.writeJSON(w, http.StatusOK, ok, "response")
+//	if err != nil {
+//		app.errorJSON(w, err)
+//		return
+//	}
+//}
 
 func (app *application) searchStudent(w http.ResponseWriter, r *http.Request) {
 
