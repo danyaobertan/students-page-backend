@@ -42,6 +42,10 @@ type StudentProfessorGroup struct {
 	StudentGroupMonitorName       string    `json:"student_group_monitor_name"`
 	StudentGroupMonitorSurname    string    `json:"student_group_monitor_surname"`
 	StudentGroupMonitorPatronymic string    `json:"student_group_monitor_patronymic"`
+	StudentRelativeID             int       `json:"relative_id"`
+	StudentRelativeName           string    `json:"student_relative_name"`
+	StudentRelativeSurname        string    `json:"student_relative_surname"`
+	StudentRelativePatronymic     string    `json:"student_relative_patronymic"`
 }
 
 // GetProfessor returns one professor and error, if any
@@ -81,11 +85,16 @@ func (m *DBModel) GetStudent(id int) (*StudentProfessorGroup, error) {
        COALESCE(p.patronymic, '')                          as professor_patronymic,
        COALESCE(ss.name, '')                 as student_group_monitor_name,
        COALESCE(ss.surname, '')              as student_group_monitor_surname,
-       COALESCE(ss.patronymic, '')           as student_group_monitor_patronymic
+       COALESCE(ss.patronymic, '')           as student_group_monitor_patronymic,
+       sr.relative_id,
+	   COALESCE(sr.name, '')                 as student_relative_name,
+       COALESCE(sr.surname, '')              as student_relative_surname,
+       COALESCE(sr.patronymic, '')           as student_relative_patronymic
 		from students s
          join groups g on g.group_id = s.group_id
          join professors p on g.professor_id = p.professor_id 
          join students ss on s.student_group_monitor = ss.student_id
+		 join studentsrelatives sr on sr.student_id = s.student_id
 		where s.student_id = $1`
 	row := m.DB.QueryRowContext(ctx, query, id)
 
@@ -124,6 +133,10 @@ func (m *DBModel) GetStudent(id int) (*StudentProfessorGroup, error) {
 		&student.StudentGroupMonitorName,
 		&student.StudentGroupMonitorSurname,
 		&student.StudentGroupMonitorPatronymic,
+		&student.StudentRelativeID,
+		&student.StudentRelativeName,
+		&student.StudentRelativeSurname,
+		&student.StudentRelativePatronymic,
 	)
 	if err != nil {
 		return nil, err
