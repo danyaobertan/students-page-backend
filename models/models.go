@@ -24,20 +24,21 @@ type Departments struct {
 }
 
 type Professors struct {
-	ProfessorId         int       `json:"professor_id"`
-	DepartmentId        int       `json:"department_id"`
-	Name                string    `json:"name"`
-	Surname             string    `json:"surname"`
-	Patronymic          string    `json:"patronymic"`
-	Degree              string    `json:"degree"`
-	IdCode              string    `json:"id_code"`
-	BirthDate           time.Time `json:"birth_date"`
-	Gender              string    `json:"gender"`
-	PhoneNumber         string    `json:"phone_number"`
-	Email               string    `json:"email"`
-	ResidencePostalCode string    `json:"residence_postal_code"`
-	ResidenceAddress    string    `json:"residence_address"`
-	Groups              []*Groups `json:"groups"`
+	ProfessorId         int         `json:"professor_id"`
+	DepartmentId        int         `json:"department_id"`
+	Name                string      `json:"name"`
+	Surname             string      `json:"surname"`
+	Patronymic          string      `json:"patronymic"`
+	Degree              string      `json:"degree"`
+	IdCode              string      `json:"id_code"`
+	BirthDate           time.Time   `json:"birth_date"`
+	Gender              string      `json:"gender"`
+	PhoneNumber         string      `json:"phone_number"`
+	Email               string      `json:"email"`
+	ResidencePostalCode string      `json:"residence_postal_code"`
+	ResidenceAddress    string      `json:"residence_address"`
+	Groups              []*Groups   `json:"groups"`
+	Departments         Departments `json:"departments"`
 }
 
 type Groups struct {

@@ -10,14 +10,30 @@ func (m *DBModel) GetProfessor(id int) (*Professors, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := `select professor_id, department_id, name, surname, patronymic, degree, id_code, birth_date, gender,
-                        phone_number, email, residence_postal_code, residence_address  from professors where professor_id = $1 `
+	query := `select p.professor_id, p.department_id,
+       COALESCE(p.name,''),
+       COALESCE(p.surname,''),
+       COALESCE(p.patronymic,''),
+       COALESCE(p.degree,''),
+       COALESCE(p.id_code,''),
+       COALESCE(p.birth_date,'0001-01-01'),
+       COALESCE(p.gender,''),
+       COALESCE(p.phone_number,''),
+       COALESCE(p.email,''),
+       COALESCE(p.residence_postal_code,''),
+       COALESCE(p.residence_address,''),
+       COALESCE(d.department_name,'')
+		from professors p
+join departments d on d.department_id = p.department_id
+where p.professor_id = $1 `
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 
 	var professor Professors
 
 	err := row.Scan(
+		//COALESCE(ss.name, '')                 as student_group_monitor_name,
+
 		&professor.ProfessorId,
 		&professor.DepartmentId,
 		&professor.Name,
@@ -31,6 +47,7 @@ func (m *DBModel) GetProfessor(id int) (*Professors, error) {
 		&professor.Email,
 		&professor.ResidencePostalCode,
 		&professor.ResidenceAddress,
+		&professor.Departments.DepartmentName,
 	)
 	if err != nil {
 		return nil, err

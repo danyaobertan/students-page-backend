@@ -79,22 +79,22 @@ func (m *DBModel) GetStudent(id int) (*StudentProfessorGroup, error) {
        COALESCE(s.phone_number, '')                        as phone_number,
        COALESCE(s.email, '')                               as email,
        COALESCE(g.group_name, '')                          as group_name,
-       p.professor_id,
+       COALESCE(p.professor_id, 0) 						 as professor_id,
        COALESCE(p.name, '')                                as professor_name,
        COALESCE(p.surname, '')                             as professor_surname,
        COALESCE(p.patronymic, '')                          as professor_patronymic,
        COALESCE(ss.name, '')                 as student_group_monitor_name,
        COALESCE(ss.surname, '')              as student_group_monitor_surname,
        COALESCE(ss.patronymic, '')           as student_group_monitor_patronymic,
-       sr.relative_id,
+       COALESCE(sr.relative_id,0)           as  relative_id,
 	   COALESCE(sr.name, '')                 as student_relative_name,
        COALESCE(sr.surname, '')              as student_relative_surname,
        COALESCE(sr.patronymic, '')           as student_relative_patronymic
-		from students s
-         join groups g on g.group_id = s.group_id
-         join professors p on g.professor_id = p.professor_id 
-         join students ss on s.student_group_monitor = ss.student_id
-		 join studentsrelatives sr on sr.student_id = s.student_id
+		from students s 
+         Left outer join groups g on g.group_id = s.group_id
+         Left outer join professors p on g.professor_id = p.professor_id 
+         Left outer join students ss on s.student_group_monitor = ss.student_id
+		 Left outer join studentsrelatives sr on sr.student_id = s.student_id
 		where s.student_id = $1`
 	row := m.DB.QueryRowContext(ctx, query, id)
 
