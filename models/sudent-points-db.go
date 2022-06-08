@@ -13,13 +13,16 @@ import (
 //}
 
 type StudentPoint struct {
-	StudentId      int       `json:"student_id"`
-	SubjectName    string    `json:"subject_name"`
-	ExamScore      string    `json:"exam_score"`
-	TotalScore     string    `json:"total_score"`
-	SubjectCredits float32   `json:"subject_credits"`
-	ExamType       string    `json:"exam_type"`
-	ExamDate       time.Time `json:"exam_date"`
+	StudentId         int       `json:"student_id"`
+	StudentName       string    `json:"student_name"`
+	StudentSurname    string    `json:"student_surname"`
+	StudentPatronymic string    `json:"student_patronymic"`
+	SubjectName       string    `json:"subject_name"`
+	ExamScore         string    `json:"exam_score"`
+	TotalScore        string    `json:"total_score"`
+	SubjectCredits    float32   `json:"subject_credits"`
+	ExamType          string    `json:"exam_type"`
+	ExamDate          time.Time `json:"exam_date"`
 }
 
 //type StudentsPoint struct {
@@ -31,7 +34,7 @@ func (m *DBModel) GetStudentPoints(id int) ([]*StudentPoint, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
-	query := `Select students.student_id, subjects.subject_name, COALESCE(studentssubjects.exam_score,0),studentssubjects.total_score,
+	query := `Select students.student_id, students.name,students.surname,students.patronymic, subjects.subject_name, COALESCE(studentssubjects.exam_score,0),studentssubjects.total_score,
 			subjects.subject_credits, subjects.exam_type, subjects.exam_date From students
 			join studentssubjects on studentssubjects.student_id = students.student_id
 			join subjects on subjects.subject_id = studentssubjects.subject_id
@@ -50,6 +53,9 @@ func (m *DBModel) GetStudentPoints(id int) ([]*StudentPoint, error) {
 		var student_point StudentPoint
 		err := rows.Scan(
 			&student_point.StudentId,
+			&student_point.StudentName,
+			&student_point.StudentSurname,
+			&student_point.StudentPatronymic,
 			&student_point.SubjectName,
 			&student_point.ExamScore,
 			&student_point.TotalScore,

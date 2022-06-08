@@ -24,6 +24,8 @@ func (m *DBModel) GetGroup(id int) ([]*GroupStudentProfessor, error) {
        COALESCE(s.name, '')                  as student_name,
        COALESCE(s.surname, '')               as student_surname,
        COALESCE(s.patronymic, '')            as student_patronymic,
+       COALESCE(s.phone_number, '')          as student_phone_number,
+       COALESCE(s.email, '')                 as student_pemail,
        COALESCE(ss.student_group_monitor, 0) as student_group_monitor_id,
        COALESCE(ss.name, '')                 as student_group_monitor_name,
        COALESCE(ss.surname, '')              as student_group_monitor_surname,
@@ -36,7 +38,7 @@ func (m *DBModel) GetGroup(id int) ([]*GroupStudentProfessor, error) {
 		From groups g
          Left Outer JOIN students s on g.group_id = s.group_id
          LEFT Outer JOIN professors p on p.professor_id = g.professor_id
-        JOIN students ss on s.student_group_monitor = ss.student_id
+         LEFT JOIN students ss on s.student_group_monitor = ss.student_id
 		where g.group_id = $1`
 
 	row, err := m.DB.QueryContext(ctx, query, id)
@@ -54,6 +56,8 @@ func (m *DBModel) GetGroup(id int) ([]*GroupStudentProfessor, error) {
 			&groupRow.Student.Name,
 			&groupRow.Student.Surname,
 			&groupRow.Student.Patronymic,
+			&groupRow.Student.PhoneNumber,
+			&groupRow.Student.Email,
 			&groupRow.Student.StudentGroupMonitor,
 			&groupRow.StudentGroupMonitorName,
 			&groupRow.StudentGroupMonitorSurname,
