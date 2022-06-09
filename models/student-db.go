@@ -264,23 +264,51 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 	return students, err
 }
 
-func (m *DBModel) InsertStudent(student Students) error {
+func (m *DBModel) InsertStudent(student StudentProfessorGroup) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+	if student.StudentPayload {
 
-	stmt := `insert into students (name, surname, patronymic, COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id, tuition, phone_number, email) 
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	}
+	stmt := `insert into students (name, surname, patronymic, gender,group_id, tuition, phone_number, email,
+					  COALESCE(id_code,''),
+                      COALESCE(residence_postal_code,''),
+                      COALESCE(residence_address,''),
+                      COALESCE(campus_postal_code,''),
+                      COALESCE(campus_address,''),
+                      COALESCE(bachelors_enrollment_document_id,''),
+                      COALESCE(masters_enrollment_document_id,''),
+                      COALESCE(bachelors_expulsion_document_id,''),
+                      COALESCE(masters_expulsion_document_id,''),
+					  COALESCE(bachelors_enrollment_date,'0001-01-01'),
+                      COALESCE(masters_enrollment_date,'0001-01-01'),
+                      COALESCE(bachelors_enrollment_date,'0001-01-01'),
+                      COALESCE(masters_expulsion_date,'0001-01-01')
+) 
+				values ($1, $2, $3, $4, $5, $6, $7, $8 ,$9 ,$10 ,$11, $12, $13, $14, $15, $16, $17, $18, $19 ,$20 ,$21)`
 
 	_, err := m.DB.ExecContext(ctx, stmt,
 		student.Name,
 		student.Surname,
 		student.Patronymic,
-		student.BachelorsEnrollmentDate,
 		student.Gender,
 		student.GroupId,
 		student.Tuition,
 		student.PhoneNumber,
 		student.Email,
+		student.IdCode,
+		student.ResidencePostalCode,
+		student.ResidenceAddress,
+		student.CampusPostalCode,
+		student.CampusAddress,
+		student.BachelorsEnrollmentDocumentId,
+		student.MastersEnrollmentDocumentId,
+		student.BachelorsExpulsionDocumentId,
+		student.MastersExpulsionDocumentId,
+		student.BachelorsEnrollmentDate,
+		student.MastersEnrollmentDate,
+		student.BachelorsExpulsionDate,
+		student.MastersExpulsionDate,
 	)
 	if err != nil {
 		return err
@@ -289,12 +317,33 @@ func (m *DBModel) InsertStudent(student Students) error {
 	return nil
 }
 
-func (m *DBModel) UpdateStudent(student Students) error {
+func (m *DBModel) UpdateStudent(student StudentProfessorGroup) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	stmt := `update students set name = $1, surname=$2, patronymic=$3, bachelors_enrollment_date=$4, gender=$5,
-                    group_id=$6, tuition=$7, phone_number=$8, email=$9 where student_id = $10`
+	stmt := `update students set 
+                    name = $1,
+                    surname=$2, 
+                    patronymic=$3, 
+                    gender=$4,
+                    group_id=$5,
+                    tuition=$6,
+                    phone_number=$7,
+                    email=$8 ,
+                    id_code=$9 ,
+                    residence_postal_code=$10 ,
+                    residence_address=$11 ,
+                    campus_postal_code=$12 ,
+                    campus_address=$13 ,
+                    bachelors_enrollment_document_id=$14 ,
+                    masters_enrollment_document_id=$15 ,
+                    bachelors_expulsion_document_id=$16 ,
+                    masters_expulsion_document_id=$17 ,
+                    bachelors_enrollment_date=$18 ,
+                    masters_enrollment_date=$19 ,
+                    bachelors_expulsion_date=$20 ,
+                    masters_expulsion_date=$21 
+where student_id = $22`
 	//fmt.Println(student)
 	//fmt.Println(`/n`)
 	//fmt.Println("/n")
@@ -303,12 +352,24 @@ func (m *DBModel) UpdateStudent(student Students) error {
 		student.Name,
 		student.Surname,
 		student.Patronymic,
-		student.BachelorsEnrollmentDate,
 		student.Gender,
 		student.GroupId,
 		student.Tuition,
 		student.PhoneNumber,
 		student.Email,
+		student.IdCode,
+		student.ResidencePostalCode,
+		student.ResidenceAddress,
+		student.CampusPostalCode,
+		student.CampusAddress,
+		student.BachelorsEnrollmentDocumentId,
+		student.MastersEnrollmentDocumentId,
+		student.BachelorsExpulsionDocumentId,
+		student.MastersExpulsionDocumentId,
+		student.BachelorsEnrollmentDate,
+		student.MastersEnrollmentDate,
+		student.BachelorsExpulsionDate,
+		student.MastersExpulsionDate,
 		student.StudentId,
 	)
 	if err != nil {
