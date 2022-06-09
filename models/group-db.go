@@ -77,67 +77,33 @@ func (m *DBModel) GetGroup(id int) ([]*GroupStudentProfessor, error) {
 	return group, nil
 }
 
-func (m *DBModel) AllGroups() ([]*GroupStudentProfessor, error) {
-	//ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	//defer cancel()
-	//
-	//query := `select professor_id, department_id, name, surname, patronymic, degree, id_code, birth_date, gender,
-	//                    phone_number, email, residence_postal_code, residence_address from professors order by professor_id`
-	//
-	//rows, err := m.DB.QueryContext(ctx, query)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer rows.Close()
-	//
-	//var professors []*Professors
-	//
-	//for rows.Next() {
-	//	var professor Professors
-	//	err := rows.Scan(
-	//		&professor.ProfessorId,
-	//		&professor.DepartmentId,
-	//		&professor.Name,
-	//		&professor.Surname,
-	//		&professor.Patronymic,
-	//		&professor.Degree,
-	//		&professor.IdCode,
-	//		&professor.BirthDate,
-	//		&professor.Gender,
-	//		&professor.PhoneNumber,
-	//		&professor.Email,
-	//		&professor.ResidencePostalCode,
-	//		&professor.ResidenceAddress,
-	//	)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//	// get groups, if any
-	//	groupsQuery := `select group_id,group_name,professor_id from groups Where professor_id = $1 order by group_id`
-	//	groupsRows, err := m.DB.QueryContext(ctx, groupsQuery, professor.ProfessorId)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	var groups []*Groups
-	//
-	//	for groupsRows.Next() {
-	//		var group Groups
-	//		err := groupsRows.Scan(
-	//			&group.GroupId,
-	//			&group.GroupName,
-	//			&group.ProfessorId,
-	//		)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		professor.Groups = append(groups, &group)
-	//
-	//	}
-	//	groupsRows.Close()
-	//
-	//	professors = append(professors, &professor)
-	//}
-	//return professors, err
-	return nil, nil
+func (m *DBModel) AllGroups() ([]*Groups, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := `Select g.group_id , g.group_name From groups g`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var groups []*Groups
+
+	for rows.Next() {
+		var group Groups
+		err := rows.Scan(
+			&group.GroupId,
+			&group.GroupName,
+		)
+		if err != nil {
+			return nil, err
+
+		}
+		groups = append(groups, &group)
+
+	}
+	rows.Close()
+	return groups, err
 }

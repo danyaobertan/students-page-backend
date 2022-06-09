@@ -7,7 +7,7 @@ import (
 
 // GetProfessor returns one professor and error, if any
 func (m *DBModel) GetProfessor(id int) (*Professors, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
 
 	query := `select p.professor_id, p.department_id,
@@ -23,9 +23,15 @@ func (m *DBModel) GetProfessor(id int) (*Professors, error) {
        COALESCE(p.residence_postal_code,''),
        COALESCE(p.residence_address,''),
        COALESCE(d.department_name,'')
+
 		from professors p
-join departments d on d.department_id = p.department_id
+Left join departments d on d.department_id = p.department_id
 where p.professor_id = $1 `
+
+	//--        ,
+	//--        COALESCE(s.subject_id,1),
+	//--        COALESCE(s.name,'')
+	//-- Left join subjects s on s.professor_id = p.professor_id
 
 	row := m.DB.QueryRowContext(ctx, query, id)
 
@@ -72,10 +78,35 @@ where p.professor_id = $1 `
 		if err != nil {
 			return nil, err
 		}
-		professor.Groups = append(groups, &group)
+		groups = append(groups, &group)
 
 	}
+	professor.Groups = groups
+
 	groupsRows.Close()
+
+	subjectsQuery := `select subject_id,subject_name from subjects Where professor_id = $1 order by subject_id`
+	subjectRows, err := m.DB.QueryContext(ctx, subjectsQuery, professor.ProfessorId)
+	if err != nil {
+		return nil, err
+	}
+
+	var subjects []*Subjects
+
+	for subjectRows.Next() {
+		var subject Subjects
+		err := subjectRows.Scan(
+			&subject.SubjectId,
+			&subject.SubjectName,
+		)
+		if err != nil {
+			return nil, err
+		}
+		subjects = append(subjects, &subject)
+	}
+	professor.Subjects = subjects
+
+	subjectRows.Close()
 
 	return &professor, nil
 }

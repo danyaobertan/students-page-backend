@@ -38,6 +38,7 @@ type Professors struct {
 	ResidencePostalCode string      `json:"residence_postal_code"`
 	ResidenceAddress    string      `json:"residence_address"`
 	Groups              []*Groups   `json:"groups"`
+	Subjects            []*Subjects `json:"subjects"`
 	Departments         Departments `json:"departments"`
 }
 
@@ -90,7 +91,7 @@ type Subjects struct {
 	SubjectId      int       `json:"subject_id"`
 	ProfessorId    int       `json:"professor_id"`
 	SubjectName    string    `json:"subject_name"`
-	SubjectCredits int       `json:"subject_credits"`
+	SubjectCredits float32   `json:"subject_credits"`
 	ExamType       string    `json:"exam_type"`
 	ExamDate       time.Time `json:"exam_date"`
 }

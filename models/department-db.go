@@ -20,7 +20,7 @@ func (m *DBModel) GetDepartment(id int) ([]*DepatmentProfessors, error) {
 	defer cancel()
 
 	query := `select d.department_id, d.department_name , p.professor_id, p.name, p.surname, p.patronymic, p.degree, p.phone_number, p.email  from departments as d
-	left join  professors p on p.department_id = d.department_id 
+	left  outer join  professors p on p.department_id = d.department_id 
 	where d.department_id = $1`
 
 	rows, err := m.DB.QueryContext(ctx, query, id)
