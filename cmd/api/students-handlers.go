@@ -124,7 +124,7 @@ func (app *application) editStudent(w http.ResponseWriter, r *http.Request) {
 
 	//var payload StudentPayload
 	var payload StudentPayload
-
+	var studentPayload StudentPayload
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		app.errorJSON(w, err)
@@ -138,38 +138,66 @@ func (app *application) editStudent(w http.ResponseWriter, r *http.Request) {
 		s, _ := app.models.DB.GetStudent(id)
 		student = *s
 	}
+	//studentPayload.StudentId = payload.StudentId
 
-	student.StudentId, _ = strconv.Atoi(payload.StudentId)
-	student.Surname = payload.Surname
-	student.Name = payload.Name
-	student.Patronymic = payload.Patronymic
-	student.Gender = payload.Gender
-	student.GroupId, _ = strconv.Atoi(payload.GroupId)
-	student.Tuition = payload.Tuition
-	student.PhoneNumber = payload.PhoneNumber
-	student.Email = payload.Email
-	student.IdCode = payload.IdCode
-	student.ResidencePostalCode = payload.ResidencePostalCode
-	student.ResidenceAddress = payload.ResidenceAddress
-	student.CampusPostalCode = payload.CampusPostalCode
-	student.CampusAddress = payload.CampusAddress
-	student.BachelorsEnrollmentDocumentId = payload.BachelorsEnrollmentDocumentId
-	student.MastersEnrollmentDocumentId = payload.MastersEnrollmentDocumentId
-	student.BachelorsExpulsionDocumentId = payload.BachelorsExpulsionDocumentId
-	student.MastersExpulsionDocumentId = payload.MastersExpulsionDocumentId
+	studentPayload.StudentId = payload.StudentId
+	studentPayload.Surname = payload.Surname
+	studentPayload.Name = payload.Name
+	studentPayload.Patronymic = payload.Patronymic
+	studentPayload.Gender = payload.Gender
+	studentPayload.GroupId = payload.GroupId
+	studentPayload.Tuition = payload.Tuition
+	studentPayload.PhoneNumber = payload.PhoneNumber
+	studentPayload.Email = payload.Email
+	studentPayload.IdCode = payload.IdCode
+	studentPayload.ResidencePostalCode = payload.ResidencePostalCode
+	studentPayload.ResidenceAddress = payload.ResidenceAddress
+	studentPayload.CampusPostalCode = payload.CampusPostalCode
+	studentPayload.CampusAddress = payload.CampusAddress
+	studentPayload.BachelorsEnrollmentDocumentId = payload.BachelorsEnrollmentDocumentId
+	studentPayload.MastersEnrollmentDocumentId = payload.MastersEnrollmentDocumentId
+	studentPayload.BachelorsExpulsionDocumentId = payload.BachelorsExpulsionDocumentId
+	studentPayload.MastersExpulsionDocumentId = payload.MastersExpulsionDocumentId
 	student.BachelorsEnrollmentDate, _ = time.Parse("2006-01-02", payload.BachelorsEnrollmentDate)
 	student.MastersEnrollmentDate, _ = time.Parse("2006-01-02", payload.MastersEnrollmentDate)
 	student.BachelorsExpulsionDate, _ = time.Parse("2006-01-02", payload.BachelorsExpulsionDate)
 	student.MastersExpulsionDate, _ = time.Parse("2006-01-02", payload.MastersExpulsionDate)
+	studentPayload.BachelorsEnrollmentDate = student.BachelorsEnrollmentDate.Format("2006-01-02")
+	studentPayload.MastersEnrollmentDate = student.MastersEnrollmentDate.Format("2006-01-02")
+	studentPayload.BachelorsExpulsionDate = student.BachelorsExpulsionDate.Format("2006-01-02")
+	studentPayload.MastersExpulsionDate = student.MastersExpulsionDate.Format("2006-01-02")
+
+	//student.StudentId, _ = strconv.Atoi(payload.StudentId)
+	//student.Surname = payload.Surname
+	//student.Name = payload.Name
+	//student.Patronymic = payload.Patronymic
+	//student.Gender = payload.Gender
+	//student.GroupId, _ = strconv.Atoi(payload.GroupId)
+	//student.Tuition = payload.Tuition
+	//student.PhoneNumber = payload.PhoneNumber
+	//student.Email = payload.Email
+	//student.IdCode = payload.IdCode
+	//student.ResidencePostalCode = payload.ResidencePostalCode
+	//student.ResidenceAddress = payload.ResidenceAddress
+	//student.CampusPostalCode = payload.CampusPostalCode
+	//student.CampusAddress = payload.CampusAddress
+	//student.BachelorsEnrollmentDocumentId = payload.BachelorsEnrollmentDocumentId
+	//student.MastersEnrollmentDocumentId = payload.MastersEnrollmentDocumentId
+	//student.BachelorsExpulsionDocumentId = payload.BachelorsExpulsionDocumentId
+	//student.MastersExpulsionDocumentId = payload.MastersExpulsionDocumentId
+	//student.BachelorsEnrollmentDate, _ = time.Parse("2006-01-02", payload.BachelorsEnrollmentDate)
+	//student.MastersEnrollmentDate, _ = time.Parse("2006-01-02", payload.MastersEnrollmentDate)
+	//student.BachelorsExpulsionDate, _ = time.Parse("2006-01-02", payload.BachelorsExpulsionDate)
+	//student.MastersExpulsionDate, _ = time.Parse("2006-01-02", payload.MastersExpulsionDate)
 
 	if student.StudentId == 0 {
-		err = app.models.DB.InsertStudent(student)
+		err = app.models.DB.InsertStudent(models.StudentPayload(studentPayload))
 		if err != nil {
 			app.errorJSON(w, err)
 			return
 		}
 	} else {
-		err = app.models.DB.UpdateStudent(student)
+		err = app.models.DB.UpdateStudent(models.StudentPayload(studentPayload))
 		if err != nil {
 			app.errorJSON(w, err)
 			return

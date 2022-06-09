@@ -9,6 +9,31 @@ import (
 	"time"
 )
 
+type StudentPayload struct {
+	StudentId                     string `json:"id"`
+	Surname                       string `json:"surname"`
+	Name                          string `json:"name"`
+	Patronymic                    string `json:"patronymic"`
+	Gender                        string `json:"gender"`
+	GroupId                       string `json:"group_id"`
+	Tuition                       string `json:"tuition"`
+	PhoneNumber                   string `json:"phone_number"`
+	Email                         string `json:"email"`
+	IdCode                        string `json:"id_code"`
+	ResidencePostalCode           string `json:"residence_postal_code"`
+	ResidenceAddress              string `json:"residence_address"`
+	CampusPostalCode              string `json:"campus_postal_code"`
+	CampusAddress                 string `json:"campus_address"`
+	BachelorsEnrollmentDocumentId string `json:"bachelors_enrollment_document_id"`
+	BachelorsEnrollmentDate       string `json:"bachelors_enrollment_date"`
+	MastersEnrollmentDocumentId   string `json:"masters_enrollment_document_id"`
+	MastersEnrollmentDate         string `json:"masters_enrollment_date"`
+	BachelorsExpulsionDocumentId  string `json:"bachelors_expulsion_document_id"`
+	BachelorsExpulsionDate        string `json:"bachelors_expulsion_date"`
+	MastersExpulsionDocumentId    string `json:"masters_expulsion_document_id"`
+	MastersExpulsionDate          string `json:"masters_expulsion_date"`
+}
+
 type StudentProfessorGroup struct {
 	StudentId                     int       `json:"student_id"`
 	StudentGroupMonitor           int       `json:"student_group_monitor"`
@@ -55,7 +80,7 @@ func (m *DBModel) GetStudent(id int) (*StudentProfessorGroup, error) {
 
 	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students where student_id = $1`
 	query := `select s.student_id,
-       s.student_group_monitor,
+      COALESCE( s.student_group_monitor, 0)  as student_group_monitor,
        COALESCE(s.group_id, 0)                             as group_id,
        COALESCE(s.name, '')                                as name,
        COALESCE(s.surname, '')                             as surname,
@@ -172,7 +197,8 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 	defer cancel()
 
 	//query := `select student_id,student_group_monitor, name, patronymic, surname,COALESCE(bachelors_enrollment_date,'0001-01-01'), gender,group_id,tuition,id_code,phone_number,email from students order by student_id`
-	query := `select  student_id,student_group_monitor,   
+	query := `select  student_id,
+     COALESCE(student_group_monitor,0) as student_group_monitor,   
       COALESCE(group_id,0) as group_id,
 	  COALESCE(name,'') as name,
       COALESCE(surname,'') as surname,
@@ -264,26 +290,23 @@ func (m *DBModel) AllStudents() ([]*Students, error) {
 	return students, err
 }
 
-func (m *DBModel) InsertStudent(student StudentProfessorGroup) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+func (m *DBModel) InsertStudent(student StudentPayload) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
 	defer cancel()
-	if student.StudentPayload {
-
-	}
 	stmt := `insert into students (name, surname, patronymic, gender,group_id, tuition, phone_number, email,
-					  COALESCE(id_code,''),
-                      COALESCE(residence_postal_code,''),
-                      COALESCE(residence_address,''),
-                      COALESCE(campus_postal_code,''),
-                      COALESCE(campus_address,''),
-                      COALESCE(bachelors_enrollment_document_id,''),
-                      COALESCE(masters_enrollment_document_id,''),
-                      COALESCE(bachelors_expulsion_document_id,''),
-                      COALESCE(masters_expulsion_document_id,''),
-					  COALESCE(bachelors_enrollment_date,'0001-01-01'),
-                      COALESCE(masters_enrollment_date,'0001-01-01'),
-                      COALESCE(bachelors_enrollment_date,'0001-01-01'),
-                      COALESCE(masters_expulsion_date,'0001-01-01')
+					  id_code,
+                      residence_postal_code,
+                      residence_address,
+                      campus_postal_code,
+                      campus_address,
+                      bachelors_enrollment_document_id,
+                      masters_enrollment_document_id,
+                      bachelors_expulsion_document_id,
+                      masters_expulsion_document_id,
+					  bachelors_enrollment_date,
+                      masters_enrollment_date,
+                      bachelors_expulsion_date,
+                      masters_expulsion_date
 ) 
 				values ($1, $2, $3, $4, $5, $6, $7, $8 ,$9 ,$10 ,$11, $12, $13, $14, $15, $16, $17, $18, $19 ,$20 ,$21)`
 
@@ -317,7 +340,7 @@ func (m *DBModel) InsertStudent(student StudentProfessorGroup) error {
 	return nil
 }
 
-func (m *DBModel) UpdateStudent(student StudentProfessorGroup) error {
+func (m *DBModel) UpdateStudent(student StudentPayload) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
