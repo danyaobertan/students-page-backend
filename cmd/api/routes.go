@@ -46,6 +46,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/subject/:id", app.getOneSubject)
 	router.HandlerFunc(http.MethodGet, "/v1/subject", app.getAllSubjects)
 
+	router.HandlerFunc(http.MethodGet, "/v1/send-mail-group-subject-points", app.sendMailGroupSubjectPoints)
+
 	router.POST("/v1/admin/editstudent", app.wrap(secure.ThenFunc(app.editStudent)))
 	router.POST("/v1/admin/deletestudent/:id", app.wrap(secure.ThenFunc(app.deleteStudent)))
 
