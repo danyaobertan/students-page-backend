@@ -17,6 +17,7 @@ type GroupSubjectPoints struct {
 	ExamDate            string `json:"exam_date"`
 	ExamType            string `json:"exam_type"`
 	SubjectCredits      string `json:"subject_credits"`
+	ExamScore           string `json:"exam_score"`
 	TotalScore          string `json:"total_score"`
 	ProfessorId         string `json:"professor_id"`
 	ProfessorName       string `json:"professor_name"`
@@ -47,6 +48,7 @@ func (m *DBModel) GetMailGroupSubjectPoints(f url.Values) ([]*GroupSubjectPoints
        sb.exam_date,
        sb.exam_type,
        sb.subject_credits,
+       ss.exam_score,
        ss.total_score,
        p.professor_id,
        p.name,
@@ -81,6 +83,7 @@ where s.group_id = $1
 			&group_subject_point.ExamDate,
 			&group_subject_point.ExamType,
 			&group_subject_point.SubjectCredits,
+			&group_subject_point.ExamScore,
 			&group_subject_point.TotalScore,
 			&group_subject_point.ProfessorId,
 			&group_subject_point.ProfessorName,

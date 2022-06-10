@@ -40,7 +40,6 @@ func New(config MailerConfig) Mailer {
 }
 
 func (m Mailer) Send(to, templateFile string, data interface{}) error {
-
 	if m.config.TemplatePath == "" {
 		m.config.TemplatePath = "templates/"
 	}
@@ -56,11 +55,11 @@ func (m Mailer) Send(to, templateFile string, data interface{}) error {
 		return err
 	}
 
-	plainBody := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
-	if err != nil {
-		return err
-	}
+	//plainBody := new(bytes.Buffer)
+	//err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
+	//if err != nil {
+	//	return err
+	//}
 
 	htmlBody := new(bytes.Buffer)
 	err = tmpl.ExecuteTemplate(htmlBody, "htmlBody", data)
@@ -72,7 +71,7 @@ func (m Mailer) Send(to, templateFile string, data interface{}) error {
 	msg.SetHeader("To", to)
 	msg.SetHeader("Subject", subject.String())
 	msg.SetHeader("From", m.sender)
-	msg.SetBody("text/plain", plainBody.String())
+	//msg.SetBody("text/plain", plainBody.String())
 	msg.AddAlternative("text/html", htmlBody.String())
 
 	return m.dailer.DialAndSend(msg)

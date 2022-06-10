@@ -1,17 +1,4 @@
-{{define "subject"}}Підсумкові результати з дисципліни {{.SubjectName}}.{{end}}
-
-
-{{define "plainBody"}}
-Plain body of the FIT
-Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-
-Eaque deserunt a itaque. Eos tenetur ipsum aperiam dignissimos,
-
-totam dolorem sed tempore
-quis, quidem rerum atque esse perspiciatis magni temporibus voluptatibus?
-{{end}}
-
-
+{{define "subject"}}Шановний(а) {{.StudentName}} {{.StudentSurname}}, доступні підсумкові результати з дисципліни {{.SubjectName}}.{{end}}
 
 
 {{define "htmlBody"}}
@@ -34,13 +21,11 @@ quis, quidem rerum atque esse perspiciatis magni temporibus voluptatibus?
 <body>
 
 <div class="container">
-    <h3>Перегляньте підсумкову оцінку з предмету</h3>
-    <p>FIT ipsum dolor sit amet, consectetur adipisicing elit.
-    </p>
-    <p>FIT deserunt a itaque. Eos tenetur ipsum aperiam dignissimos,
-    </p>
-    <p>FIT dolorem sed tempore
-        quis, quidem rerum atque esse perspiciatis magni temporibus voluptatibus?</p>
+    <h3>Підсумкові результати з дисципліни <a href="http://localhost:3000/subject/{{.SubjectId}}">{{.SubjectName}}</a>:</h3>
+    <p>Оцінка за {{.ExamType}}: <strong>{{.ExamScore}}</strong> &emsp; &emsp;
+    <p>Підсумкова оцінка за дисципліну: <strong>{{.TotalScore}}</strong></p>
+    <p>Викладач:<a href="http://localhost:3000/professors/{{.ProfessorId}}">{{.ProfessorName}} {{.ProfessorPatronymic}} {{.ProfessorSurname}}</a></p>
+    <p><a href="http://localhost:3000/students/{{.StudentId}}">Перейти на особисту сторінку</a></p>
 </div>
 
 </body>

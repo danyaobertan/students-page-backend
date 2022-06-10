@@ -23,13 +23,10 @@ func SendMail(gsp []*models.GroupSubjectPoints) {
 	}
 
 	sender := New(config)
-
-	err := sender.Send("jondoe@gmail.com", "letter.html", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	for key, value := range gsp {
+		//if key>0 {
+		//	break
+		//}
 		err := sender.Send(value.StudentMail, "letter.html", value)
 		if err != nil {
 			log.Fatal(err)
